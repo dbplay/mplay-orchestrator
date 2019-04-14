@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`mplay-orchestrator can init send command and clean 1`] = `
+Object {
+  "out": "WriteResult({ \\"nInserted\\" : 1 })",
+  "status": "SUCCESS",
+}
+`;
