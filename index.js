@@ -2,7 +2,7 @@ const { json, send } = require('micro')
 const { router, get, post } = require('microrouter')
 const { promisify } = require('util')
 const portfinder = require('portfinder');
-const os = require('os');
+const ip = require('ip');
 const request = require('request-promise')
 const pRetry = require('p-retry');
 
@@ -28,7 +28,7 @@ const init = async (req, res) => {
     const version = payload.version;
     const id = guidGenerator();
     const mongoPort = await portfinder.getPortPromise()
-    const mongoUrl = 'mongodb://' + os.ip() + ':' + mongoPort
+    const mongoUrl = 'mongodb://' + ip.address() + ':' + mongoPort
     await exec(`docker run -d --rm --name ${id}mongo -p ${mongoPort}:3000 mongo:${version}`)
     const runnerPort = await portfinder.getPortPromise()
     await exec(`docker run -d -e "MONGODB_URL=mongodb:27017" --name ${id}runner -p ${runnerPort}:3000 --link ${id}mongo:mongodb dbplay/mplay-runner`)
