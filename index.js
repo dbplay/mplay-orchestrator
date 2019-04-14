@@ -29,7 +29,7 @@ const init = async (req, res) => {
     const id = guidGenerator();
     const mongoPort = await portfinder.getPortPromise()
     const mongoUrl = 'mongodb://' + ip.address() + ':' + mongoPort
-    await exec(`docker run -d --rm --name ${id}mongo -p ${mongoPort}:3000 mongo:${version}`)
+    await exec(`docker run -d --rm --name ${id}mongo -p ${mongoPort}:27017 mongo:${version}`)
     const runnerPort = await portfinder.getPortPromise()
     await exec(`docker run -d -e "MONGODB_URL=mongodb:27017" --name ${id}runner -p ${runnerPort}:3000 --link ${id}mongo:mongodb dbplay/mplay-runner`)
     const database = {
