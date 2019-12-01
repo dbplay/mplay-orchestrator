@@ -71,9 +71,9 @@ const command = async (req, res) => {
     return pRetry(() => sendCommand(req, res), { retries: 5 })
 }
 
-const clean = async (req, res) => {
-    await exec(`docker ps | awk '{ print $1,$12 }' | grep -i "\\-............runner" | awk '{print $1}' | xargs -I {} docker stop {}`)
-    await exec(`docker ps | awk '{ print $1,$12 }' | grep -i "\\-............mongo" | awk '{print $1}' | xargs -I {} docker stop {}`)
+const cleanall = async (req, res) => {
+    await exec(`docker ps | awk '{ print $1,$11 }' | grep -i "\\-............runner" | awk '{print $1}' | xargs -I {} docker stop {}`)
+    await exec(`docker ps | awk '{ print $1,$11 }' | grep -i "\\-............mongo" | awk '{print $1}' | xargs -I {} docker stop {}`)
     send(res, 200)
 }
 
@@ -82,6 +82,6 @@ const notfound = (req, res) => send(res, 404, 'Not found route')
 
 module.exports = router(
     post('/init', init),
-    get('/clean', clean),
+    get('/cleanall', cleanall),
     post('/command', command),
     get('/*', notfound))

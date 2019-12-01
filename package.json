@@ -20,7 +20,7 @@
   },
   "scripts": {
     "pretest": "docker pull mongo:4.0",
-    "test": "jest",
+    "test": "jest __tests__/e2e.test.js",
     "dev": "micro-dev",
     "start": "micro"
   },
