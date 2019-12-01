@@ -31,7 +31,7 @@ const init = async (req, res) => {
     const mongoUrl = 'mongodb://' + ip.address() + ':' + mongoPort
     await exec(`docker run -d --rm --name ${id}mongo -p ${mongoPort}:27017 mongo:${version}`)
     const runnerPort = await portfinder.getPortPromise()
-    await exec(`docker run -d -e "AMQP_URL=${process.env.AMQP_URL}"    -e "RUNNER_ID=${id}" -e "MONGODB_URL=mongodb:27017" --name ${id}runner -p ${runnerPort}:3000 --link ${id}mongo:mongodb dbplay/mplay-runner`)
+    await exec(`docker run -d --rm -e "AMQP_URL=${process.env.AMQP_URL}"    -e "RUNNER_ID=${id}" -e "MONGODB_URL=mongodb:27017" --name ${id}runner -p ${runnerPort}:3000 --link ${id}mongo:mongodb dbplay/mplay-runner`)
     const database = {
         id,
         mongoUrl,
@@ -51,24 +51,29 @@ async function portOfRunner(id) {
 }
 
 const sendCommand = async (req, res) => {
-    const payload = await json(req)
-    const { command, id } = payload;
-    const port = await portOfRunner(id);
-    const url = 'http://localhost:' + port;
-    const body = {
-        command,
+    try {
+        const payload = await json(req)
+        const { command, id } = payload;
+        const port = await portOfRunner(id);
+        const url = 'http://localhost:' + port;
+        const body = {
+            command,
+        }
+        const commandOut = await request.post({ url, body, json: true })
+        send(res, 200, commandOut)
+    } catch(error) {
+        console.error(error)
+        throw error;
     }
-    const commandOut = await request.post({ url, body, json: true })
-    send(res, 200, commandOut)
 }
 
 const command = async (req, res) => {
     return pRetry(() => sendCommand(req, res), { retries: 5 })
 }
 
-const clean = async (req, res) => {
-    await exec(`docker ps | awk '{ print $1,$12 }' | grep -i "\\-............runner" | awk '{print $1}' | xargs -I {} docker stop {}`)
-    await exec(`docker ps | awk '{ print $1,$12 }' | grep -i "\\-............mongo" | awk '{print $1}' | xargs -I {} docker stop {}`)
+const cleanall = async (req, res) => {
+    await exec(`docker ps | awk '{ print $1,$11 }' | grep -i "\\-............runner" | awk '{print $1}' | xargs -I {} docker stop {}`)
+    await exec(`docker ps | awk '{ print $1,$11 }' | grep -i "\\-............mongo" | awk '{print $1}' | xargs -I {} docker stop {}`)
     send(res, 200)
 }
 
@@ -77,6 +82,6 @@ const notfound = (req, res) => send(res, 404, 'Not found route')
 
 module.exports = router(
     post('/init', init),
-    get('/clean', clean),
+    get('/cleanall', cleanall),
     post('/command', command),
     get('/*', notfound))
