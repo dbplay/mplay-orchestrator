@@ -1,9 +1,16 @@
 language: node_js
+addons:
+  apt:
+    packages:
+    - rabbitmq-server 
 services: 
   - mongodb
   - docker
+  - rabbitmq
 node_js:
-  - "10"
+  - "12"
+env:
+  - AMQP_URL=amqp://localhost
 after_success:
   - npm run lint
   - npm build
