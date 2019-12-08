@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  rabbitmq:
+    build:
+      context: ./rabbitmq
+      dockerfile: Dockerfile
+    ports:
+      - '5672:5672'      
