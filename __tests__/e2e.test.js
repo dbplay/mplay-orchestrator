@@ -1,4 +1,5 @@
 const micro = require('micro')
+const delay = require('delay')
 const request = require('request-promise')
 const listen = require('test-listen')
 const handler = require('../index')
@@ -21,7 +22,7 @@ describe('mplay-orchestrator', () => {
         service.close()
     })
 
-    it('can init', async () => {
+    it('can init and delete automatically containers once expired', async () => {
         jest.setTimeout(30 * 1000)
         const bodyInit = { version: '4.0' }
         const initRes = await request.post({ url: url + '/init', body: bodyInit, json: true })
@@ -29,5 +30,9 @@ describe('mplay-orchestrator', () => {
         const {stdout } = await exec(`docker ps | grep ${id}`)
         expect(stdout).toMatch('dbplay/mplay-runner')
         expect(stdout).toMatch('mongo')
+        await delay(8 * 1000)
+        const after = await exec(`docker ps`)
+        expect(after.stdout).not.toMatch(id)
+        expect(after.stderr).toBe('')
     })
 })
