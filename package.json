@@ -14,7 +14,7 @@
     "portfinder": "^1.0.20"
   },
   "devDependencies": {
-    "delay": "^4.3.0",
+    "delay": "^5.0.0",
     "jest": "^24.7.1",
     "micro-dev": "^3.0.0",
     "request-promise": "^4.2.4",
