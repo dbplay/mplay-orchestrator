@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "delay": "^4.3.0",
-    "jest": "^24.7.1",
+    "jest": "^29.0.0",
     "micro-dev": "^3.0.0",
     "request-promise": "^4.2.4",
     "test-listen": "^1.1.0"
